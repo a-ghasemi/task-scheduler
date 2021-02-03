@@ -15,14 +15,21 @@ class ProvidersSeeder extends Seeder
     public function run()
     {
         $providers = [//$url
-                      '5d47f235330000623fa3ebf7' => 'https://www.mediaclick.com.tr/api/5d47f235330000623fa3ebf7.json',
-                      '5d47f24c330000623fa3ebfa' => 'https://www.mediaclick.com.tr/api/5d47f24c330000623fa3ebfa.json',
+                      '5d47f235330000623fa3ebf7' => [
+                          'url'  => 'https://www.mediaclick.com.tr/api/5d47f235330000623fa3ebf7.json',
+                          'type' => 'firstType',
+                      ],
+                      '5d47f24c330000623fa3ebfa' => [
+                          'url'  => 'https://www.mediaclick.com.tr/api/5d47f24c330000623fa3ebfa.json',
+                          'type' => 'secondType',
+                      ],
         ];
 
-        foreach ($providers as $slag => $url) {
+        foreach ($providers as $slag => $details) {
             TaskProvider::create([
                 'provider_slag' => $slag,
-                'url'           => $url,
+                'url'           => $details['url'],
+                'type'          => $details['type'],
             ]);
         }
     }

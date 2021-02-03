@@ -19,6 +19,7 @@ class CreateTaskProvidersTable extends Migration
             $table->id();
             $table->string('provider_slag',24)->unique();
             $table->string('url');
+            $table->string('type','15');
             $table->timestamps();
         });
     }
