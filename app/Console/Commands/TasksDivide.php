@@ -53,8 +53,22 @@ class TasksDivide extends Command
             }
         }
 
+        $this->print_matrix($times);
+
         return 0;
     }
 
+    private function print_matrix($matrix){
+        ksort($matrix);
+        foreach($matrix as $key => $items){
+            echo $key .' => ';
+            foreach($items as $item){
+                echo implode(',',$item);
+                echo "|";
+            }
+            echo "&#008;";
+            echo "\n";
+        }
+    }
 
 }
