@@ -62,11 +62,12 @@ class TasksDivide extends Command
         ksort($matrix);
         foreach($matrix as $key => $items){
             echo $key .' => ';
+            $row = [];
             foreach($items as $item){
-                echo implode(',',$item);
-                echo "|";
+                $row[] = implode(',',$item);
             }
-            echo "&#008;";
+            echo implode('|',$row);
+
             echo "\n";
         }
     }
