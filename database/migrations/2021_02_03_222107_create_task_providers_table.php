@@ -17,9 +17,9 @@ class CreateTaskProvidersTable extends Migration
             $table->engine = 'MyISAM';
 
             $table->id();
-            $table->string('provider_slag',24)->unique();
+            $table->string('slag',24)->unique();
             $table->string('url');
-            $table->string('type','15');
+            $table->string('adaptor','20');
             $table->timestamps();
         });
     }
