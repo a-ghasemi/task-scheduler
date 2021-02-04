@@ -55,6 +55,23 @@ class TasksDivide extends Command
 
         $this->print_matrix($times);
 
+$count = 0;
+        do{
+$count++;
+            $repeat = false;
+            for($i = 4; $i > 0; $i--){
+                for($j = $i + 1; $j <= 5; $j++){
+                    if(count($times[$i]) - count($times[$j]) >= 2 ){
+                        $times[$j][] = array_pop($times[$i]);
+                        $repeat = true;
+                    }
+                }
+            }
+        }while($repeat);
+
+$this->comment($count);
+        $this->print_matrix($times);
+
         return 0;
     }
 
