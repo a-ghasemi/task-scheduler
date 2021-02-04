@@ -38,12 +38,30 @@ class Tasks extends Command
      */
     public function handle()
     {
-        $provider = TaskProvider::find($this->argument('provider_id'));
-        if (empty($provider)) return 0;
+        $provider_id = (int) $this->argument('provider_id');
+
+        $provider = TaskProvider::find($provider_id);
+        if (empty($provider)) return $this->error('Provider id ['.$provider_id.'] not found!');
+
+        $this->comment("Provider Slag: ".$provider->slag);
+        $this->comment("Provider URL: ".$provider->url);
+        $this->comment("Provider Adaptor: ".$provider->adaptor);
 
         $tasks = $this->readUrl($provider->url);
 
-        dd($tasks);
+        $adaptor = new ($provider->adaptor);
+        $adaptor->setData($tasks);
+
+        $task_saver = new TaskSaver();
+        $task_saver->setAdaptor($adaptor);
+        $result = $task_saver->execute();
+
+        if($result['success'] === FALSE){
+            return $this->error('Process failed');
+        }
+
+        $this->comment('Process done');
+        $this->comment('Added Tasks: ' . $result['count']);
     }
 
     protected function readUrl($url)
