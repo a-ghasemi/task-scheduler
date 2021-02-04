@@ -23,6 +23,10 @@ class ProvidersSeeder extends Seeder
                           'url'  => 'https://www.mediaclick.com.tr/api/5d47f24c330000623fa3ebfa.json',
                           'type' => 'SecondAdaptor',
                       ],
+                      'localhost1' => [
+                          'url'  => 'localhost/data01.json',
+                          'type' => 'LocalAdaptor',
+                      ],
         ];
 
         foreach ($providers as $slag => $details) {
