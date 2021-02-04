@@ -19,6 +19,7 @@ class CreateTasksTable extends Migration
             $table->string('name');
             $table->unsignedSmallInteger('duration');
             $table->unsignedTinyInteger('level');
+            $table->boolean('scheduled')->default(false);
             $table->timestamps();
 
             $table->unique(['provider_id', 'name']);

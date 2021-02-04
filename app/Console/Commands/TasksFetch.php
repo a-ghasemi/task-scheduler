@@ -2,13 +2,15 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Developer;
+use App\Models\Task;
 use App\Models\TaskProvider;
 use App\Support\TaskSaver;
 use App\Support\Providers\FirstAdaptor;
 use App\Support\Providers\SecondAdaptor;
 use Illuminate\Console\Command;
 
-class Tasks extends Command
+class TasksFetch extends Command
 {
     /**
      * The name and signature of the console command.
@@ -44,7 +46,10 @@ class Tasks extends Command
         $provider_id = (int) $this->argument('provider_id');
 
         $provider = TaskProvider::find($provider_id);
-        if (empty($provider)) return $this->error('Provider id ['.$provider_id.'] not found!');
+        if (empty($provider)) {
+            $this->error('Provider id ['.$provider_id.'] not found!');
+            return 1;
+        }
 
         $this->comment("Provider Slag: ".$provider->slag);
         $this->comment("Provider URL: ".$provider->url);
@@ -59,11 +64,14 @@ class Tasks extends Command
 
         if($result['success'] === FALSE){
             $this->error('Process failed');
-            return $this->error($result['message']);
+            $this->error($result['message']);
+            return 1;
         }
 
         $this->comment('Process done');
         $this->comment('Added Tasks: ' . $result['count']);
+
+        return 0;
     }
 
 }
