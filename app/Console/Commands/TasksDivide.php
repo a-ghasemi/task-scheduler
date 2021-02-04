@@ -43,50 +43,91 @@ class TasksDivide extends Command
      */
     public function handle()
     {
-        $tasks = Task::where('scheduled',false)->get();
+        $tasks = Task::where('scheduled', false)->get();
 //        $developers = Developer::all();
 
         $times = [];
-        foreach($tasks as $task){
-            for($i=0; $i < $task->duration; $i++){
+        foreach ($tasks as $task) {
+            for ($i = 0; $i < $task->duration; $i++) {
                 $times[$task->level][] = [$task->id, $task->level];
             }
         }
 
-        $this->print_matrix($times);
+        $times = $this->Sanitize($times);
 
-$count = 0;
-        do{
-$count++;
+        $this->print_matrix($times);
+        $this->comment('--------------');
+
+        $times = $this->Mix($times);
+
+        $this->print_matrix_2($times);
+
+        return 0;
+    }
+
+    private function print_matrix($matrix)
+    {
+        ksort($matrix);
+        foreach ($matrix as $key => $items) {
+            echo $key . ' => ';
+            $row = [];
+            foreach ($items as $item) {
+                $row[] = implode(',', $item);
+            }
+            echo implode('|', $row);
+
+            echo "\n";
+        }
+    }
+
+    private function print_matrix_2($matrix)
+    {
+        foreach ($matrix as $key => $items) {
+            echo $key . ' => ';
+            $row = [];
+            foreach ($items as $id => $item) {
+                foreach ($item as $level => $count) {
+                    $row[] = implode(',', [$id,$level,$count]);
+                }
+            }
+            echo implode('|', $row);
+
+            echo "\n";
+        }
+    }
+
+    protected function Sanitize(array $times): array
+    {
+        $count = 0;
+        do {
+            $count++;
             $repeat = false;
-            for($i = 4; $i > 0; $i--){
-                for($j = $i + 1; $j <= 5; $j++){
-                    if(count($times[$i]) - count($times[$j]) >= 2 ){
+            for ($i = 4; $i > 0; $i--) {
+                for ($j = $i + 1; $j <= 5; $j++) {
+                    if (count($times[$i]) - count($times[$j]) >= 2) {
                         $times[$j][] = array_pop($times[$i]);
                         $repeat = true;
                     }
                 }
             }
-        }while($repeat);
+        } while ($repeat);
 
-$this->comment($count);
-        $this->print_matrix($times);
+        $this->comment($count);
 
-        return 0;
+        return $times;
     }
 
-    private function print_matrix($matrix){
-        ksort($matrix);
-        foreach($matrix as $key => $items){
-            echo $key .' => ';
-            $row = [];
-            foreach($items as $item){
-                $row[] = implode(',',$item);
+    protected function Mix(array $times): array
+    {
+        $new_times = [];
+        for ($i = 1; $i <= 5; $i++) {
+            foreach($times[$i] as $time){//$time = id,level
+                $new_times[$i][$time[0]][$time[1]] = $new_times[$i][$time[0]][$time[1]] ?? 0;
+                $new_times[$i][$time[0]][$time[1]]++;
             }
-            echo implode('|',$row);
-
-            echo "\n";
         }
+
+        return $new_times;
     }
 
 }
