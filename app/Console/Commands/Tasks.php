@@ -3,6 +3,9 @@
 namespace App\Console\Commands;
 
 use App\Models\TaskProvider;
+use App\Support\TaskSaver;
+use App\Support\Providers\FirstAdaptor;
+use App\Support\Providers\SecondAdaptor;
 use Illuminate\Console\Command;
 
 class Tasks extends Command
@@ -47,33 +50,20 @@ class Tasks extends Command
         $this->comment("Provider URL: ".$provider->url);
         $this->comment("Provider Adaptor: ".$provider->adaptor);
 
-        $tasks = $this->readUrl($provider->url);
-
-        $adaptor = new ($provider->adaptor);
-        $adaptor->setData($tasks);
+        $adaptor_class = 'App\\Support\\Providers\\'.$provider->adaptor;
+        $adaptor = new $adaptor_class($provider->id, $provider->url);
 
         $task_saver = new TaskSaver();
         $task_saver->setAdaptor($adaptor);
         $result = $task_saver->execute();
 
         if($result['success'] === FALSE){
-            return $this->error('Process failed');
+            $this->error('Process failed');
+            return $this->error($result['message']);
         }
 
         $this->comment('Process done');
         $this->comment('Added Tasks: ' . $result['count']);
     }
 
-    protected function readUrl($url)
-    {
-        $curlSession = curl_init();
-        curl_setopt($curlSession, CURLOPT_URL, $url);
-        curl_setopt($curlSession, CURLOPT_BINARYTRANSFER, true);
-        curl_setopt($curlSession, CURLOPT_RETURNTRANSFER, true);
-
-        $jsonData = json_decode(curl_exec($curlSession));
-        curl_close($curlSession);
-
-        return $jsonData;
-    }
 }

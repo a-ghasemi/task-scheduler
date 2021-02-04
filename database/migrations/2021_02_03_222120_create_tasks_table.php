@@ -20,6 +20,8 @@ class CreateTasksTable extends Migration
             $table->unsignedSmallInteger('duration');
             $table->unsignedTinyInteger('level');
             $table->timestamps();
+
+            $table->unique(['provider_id', 'name']);
         });
     }
 
