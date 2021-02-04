@@ -40,7 +40,8 @@ class FormatData extends Command
     {
         $tasks = Task::groupBy('level')
             ->selectRaw('sum(duration) as sum, level')
-            ->pluck('sum','level');
+            ->pluck('sum','level')
+            ->toArray();
         dd($tasks);
     }
 }
