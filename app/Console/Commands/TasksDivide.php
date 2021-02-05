@@ -12,12 +12,14 @@ use Illuminate\Console\Command;
 
 class TasksDivide extends Command
 {
+    protected $show_matrix = false;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'tasks:divide';
+    protected $signature = 'tasks:divide {--f|force}';
 
     /**
      * The console command description.
@@ -43,55 +45,58 @@ class TasksDivide extends Command
      */
     public function handle()
     {
-        $tasks = Task::where('scheduled', false)->get();
-//        $developers = Developer::all();
+        if($this->option('force')) $this->comment('Divid runs in FORCE mode');
 
+        $tasks = new Task;
+        if(!$this->option('force')) $tasks = $tasks->where('scheduled', false);
+        $tasks = $tasks->get();
+
+        if($tasks->isEmpty()) {
+            $this->comment('There is no new task to schedule.');
+            return 0;
+        }
+
+        $times = $this->makeBaseMatrix($tasks);
+
+        $times = $this->Sanitize($times);
+
+        $times = $this->Mix($times);
+
+        Task::whereIn('id',$tasks->pluck('id'))->update(['scheduled' => true]);
+
+        if($this->show_matrix) $this->print_matrix($times);
+
+        $this->assignToDevelopers($times);
+
+        return 0;
+    }
+
+    protected function makeBaseMatrix($tasks): array
+    {
         $times = [];
         foreach ($tasks as $task) {
             for ($i = 0; $i < $task->duration; $i++) {
                 $times[$task->level][] = [$task->id, $task->level];
             }
         }
-
-        $times = $this->Sanitize($times);
-
-        $this->print_matrix($times);
-        $this->comment('--------------');
-
-        $times = $this->Mix($times);
-
-        $this->print_matrix_2($times);
-
-        return 0;
+        return $times;
     }
 
     private function print_matrix($matrix)
     {
-        ksort($matrix);
         foreach ($matrix as $key => $items) {
-            echo $key . ' => ';
-            $row = [];
-            foreach ($items as $item) {
-                $row[] = implode(',', $item);
-            }
-            echo implode('|', $row);
-
-            echo "\n";
-        }
-    }
-
-    private function print_matrix_2($matrix)
-    {
-        foreach ($matrix as $key => $items) {
+            $sum = 0;
             echo $key . ' => ';
             $row = [];
             foreach ($items as $id => $item) {
                 foreach ($item as $level => $count) {
-                    $row[] = implode(',', [$id,$level,$count]);
+                    $sum += $count;
+                    $row[] = implode(',', [$id, $level, $count]);
                 }
             }
             echo implode('|', $row);
 
+            echo " ($sum)";
             echo "\n";
         }
     }
@@ -102,7 +107,7 @@ class TasksDivide extends Command
         do {
             $count++;
             $repeat = false;
-            for ($i = 4; $i > 0; $i--) {
+            for ($i = 4; $i >= 1; $i--) {
                 for ($j = $i + 1; $j <= 5; $j++) {
                     if (count($times[$i]) - count($times[$j]) >= 2) {
                         $times[$j][] = array_pop($times[$i]);
@@ -110,9 +115,24 @@ class TasksDivide extends Command
                     }
                 }
             }
+            if ($repeat) $this->SortByLevel($times);
+
+            for ($i = 2; $i <= 5; $i++) {
+                for ($j = 1; $j < $i; $j++) {
+                    if (
+                        count($times[$i]) - count($times[$j]) >= 2
+                        &&
+                        last($times[$i])[1] <= $j
+                    ) {
+                        $times[$j][] = array_pop($times[$i]);
+                        $repeat = true;
+                    }
+                }
+            }
+            if ($repeat) $this->SortByLevel($times);
+
         } while ($repeat);
 
-        $this->comment($count);
 
         return $times;
     }
@@ -121,7 +141,7 @@ class TasksDivide extends Command
     {
         $new_times = [];
         for ($i = 1; $i <= 5; $i++) {
-            foreach($times[$i] as $time){//$time = id,level
+            foreach ($times[$i] as $time) {//$time = id,level
                 $new_times[$i][$time[0]][$time[1]] = $new_times[$i][$time[0]][$time[1]] ?? 0;
                 $new_times[$i][$time[0]][$time[1]]++;
             }
@@ -130,4 +150,29 @@ class TasksDivide extends Command
         return $new_times;
     }
 
+    protected function SortByLevel(array &$times): void
+    {
+        foreach ($times as &$row) {
+            $n = count($row);
+            for ($i = 0; $i < $n; $i++) {
+                for ($j = 0; $j < $n - $i - 1; $j++) {
+                    if ($row[$j][1] < $row[$j + 1][1]) {
+                        list($row[$j], $row[$j + 1]) = [$row[$j + 1], $row[$j]];
+                    }
+                }
+            }
+        }
+
+    }
+
+    protected function assignToDevelopers(array $times):void{
+        foreach($times as $index => $tasks){
+            $developer = Developer::find($index);
+            foreach($tasks as $id => $details){
+                foreach($details as $level => $duration){
+                    $developer->assignTask($id, $level, $duration);
+                }
+            }
+        }
+    }
 }

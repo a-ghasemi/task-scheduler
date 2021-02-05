@@ -22,4 +22,8 @@ class Developer extends Model
         $this->taskTimes()->orderByDesc('id')->first();
     }
 
+    public function assignTask($id, $level, $duration){
+        dd($id, $level, $duration);
+    }
+
 }
