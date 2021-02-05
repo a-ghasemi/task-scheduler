@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Developer;
+use App\Models\DeveloperTask;
 use App\Models\Task;
 use App\Models\TaskProvider;
 use App\Support\TaskSaver;
@@ -12,12 +13,17 @@ use Illuminate\Console\Command;
 
 class TasksDivide extends Command
 {
-    protected $show_matrix = false;
+    /*
+     * Show matrix and arrays in CLI mode
+     */
+    protected $debug_show = false;
 
     /**
      * The name and signature of the console command.
      *
      * @var string
+     *
+     * force mode, removes previous schedules and do everything again
      */
     protected $signature = 'tasks:divide {--f|force}';
 
@@ -45,11 +51,18 @@ class TasksDivide extends Command
      */
     public function handle()
     {
-        if($this->option('force')) $this->comment('Divid runs in FORCE mode');
+        if($this->option('force')) {
+            $this->comment('Divid runs in FORCE mode');
 
-        $tasks = new Task;
-        if(!$this->option('force')) $tasks = $tasks->where('scheduled', false);
-        $tasks = $tasks->get();
+            if(!$this->confirm("Force mode will truncate previous assigned tasks.\n" .
+                "Are you sure you want to continue ?"))
+                return 0;
+
+            DeveloperTask::truncate();
+            Task::where('scheduled',true)->update(['scheduled' => false]);
+        }
+
+        $tasks = Task::where('scheduled', false)->get();
 
         if($tasks->isEmpty()) {
             $this->comment('There is no new task to schedule.');
@@ -62,11 +75,11 @@ class TasksDivide extends Command
 
         $times = $this->Mix($times);
 
-        Task::whereIn('id',$tasks->pluck('id'))->update(['scheduled' => true]);
-
-        if($this->show_matrix) $this->print_matrix($times);
+        if($this->debug_show) $this->show_matring($times);
 
         $this->assignToDevelopers($times);
+
+        Task::whereIn('id',$tasks->pluck('id'))->update(['scheduled' => true]);
 
         return 0;
     }
@@ -82,7 +95,7 @@ class TasksDivide extends Command
         return $times;
     }
 
-    private function print_matrix($matrix)
+    private function show_matring($matrix)
     {
         foreach ($matrix as $key => $items) {
             $sum = 0;
@@ -194,6 +207,6 @@ class TasksDivide extends Command
                 }
             }
         }
-        dd($mat);
+        if($this->debug_show) dump($mat);
     }
 }

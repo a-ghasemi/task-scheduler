@@ -38,14 +38,14 @@ class Developer extends Model
     }
 
     public function assignTask($id, $level, $week, $start, $duration){
-        $task_time = new DeveloperTask();
-        $task_time->developer_id = $this->id;
-        $task_time->task_id = $id;
-        $task_time->week_number = $week;
-        $task_time->start = $start;
-        $task_time->duration = $duration;
-        $task_time->level = $level;
-        $task_time->save();
+        DeveloperTask::create([
+            'developer_id' => $this->id,
+            'task_id' => $id,
+            'week_number' => $week,
+            'start' => $start,
+            'duration' => $duration,
+            'level' => $level,
+        ]);
     }
 
 }
