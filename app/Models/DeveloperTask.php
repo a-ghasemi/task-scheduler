@@ -20,4 +20,12 @@ class DeveloperTask extends Model
         'level',
     ];
 
+    public function developer(){
+        return $this->belongsTo(Developer::class);
+    }
+
+    public function task(){
+        return $this->belongsTo(Task::class);
+    }
+
 }

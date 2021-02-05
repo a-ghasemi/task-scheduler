@@ -23,4 +23,5 @@ Route::get('logout', function () {
     return redirect('/');
 });
 
+Route::get('/timeline', [App\Http\Controllers\TimelineController::class, 'index'])->name('timeline');
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

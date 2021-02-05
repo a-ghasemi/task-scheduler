@@ -75,6 +75,7 @@
 <div class="flex-center position-ref full-height">
     @if (Route::has('login'))
         <div class="top-right links">
+            <a href="{{ route('timeline') }}">Timeline</a>
             @auth
                 <a href="{{ route('home') }}">Control Panel</a>
             @else
@@ -94,7 +95,7 @@
         </div>
 
         <div class="links">
-            Follow us at : <a href="https://github.com/a-ghasemi">Github <i class="fa fa-github"></i></a>
+            Follow us at : <a href="https://github.com/a-ghasemi/task-scheduler">Github <i class="fa fa-github"></i></a>
         </div>
     </div>
 </div>
