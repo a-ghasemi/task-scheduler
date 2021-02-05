@@ -5,10 +5,6 @@ namespace App\Console\Commands;
 use App\Models\Developer;
 use App\Models\DeveloperTask;
 use App\Models\Task;
-use App\Models\TaskProvider;
-use App\Support\TaskSaver;
-use App\Support\Providers\FirstAdaptor;
-use App\Support\Providers\SecondAdaptor;
 use Illuminate\Console\Command;
 
 class TasksDivide extends Command
@@ -16,7 +12,7 @@ class TasksDivide extends Command
     /*
      * Show matrix and arrays in CLI mode
      */
-    protected $debug_show = false;
+    protected $debug_show = true;
 
     /**
      * The name and signature of the console command.
@@ -52,7 +48,7 @@ class TasksDivide extends Command
     public function handle()
     {
         if($this->option('force')) {
-            $this->comment('Divid runs in FORCE mode');
+            $this->comment('Divide runs in FORCE mode');
 
             if(!$this->confirm("Force mode will truncate previous assigned tasks.\n" .
                 "Are you sure you want to continue ?"))
@@ -193,6 +189,8 @@ class TasksDivide extends Command
                         $part = ($start + $duration < $developer->per_week)?
                             $duration:
                             $developer->per_week - $start;
+
+                        if($part == 0) break;
 
                         $mat[$index][] = implode(',',[$id."|". $level, $week, $start.'|'. $part]);
                         $developer->assignTask($id, $level, $week, $start, $part);

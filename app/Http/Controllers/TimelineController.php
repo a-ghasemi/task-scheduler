@@ -30,6 +30,8 @@ class TimelineController extends Controller
         }
         $times = $times->get();
 
-        return view('timeline')->withTimes($times);
+        $summary = DeveloperTask::getSummary();
+
+        return view('timeline')->withTimes($times)->withSummary($summary);
     }
 }

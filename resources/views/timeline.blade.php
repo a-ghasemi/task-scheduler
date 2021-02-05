@@ -72,55 +72,61 @@
         }
     </style>
 
-    <style>
-        .table-responsive {
-            border:1px solid #aaa;
-        }
-        table {
-            width: 100%;
-        }
-        thead, tbody tr {
-            display: table;
-            width: 100%;
-            table-layout: fixed;
-        }
-        tbody {
-            display: block;
-            overflow-y: auto;
-            table-layout: fixed;
-            max-height: 70vh;
-        }
-
-        tbody::-webkit-scrollbar {
-            display: none;
-        }
-
-        table thead {
-            border-top: none;
-            border-bottom: none;
-            background-color: #FFF;
-        }
-        tbody{
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
-        }
-
-        .color-1>td{background-color: #1d4877; color:#eee;}
-        .color-2>td{background-color: #1b8a5a; color:#eee;}
-        .color-3>td{background-color: #fbb021;}
-        .color-4>td{background-color: #f68838;}
-        .color-5>td{background-color: #ee3e32; color:#eee;}
-
-        tr>td{
-            cursor: default;
-        }
-        
-        tr:hover>td{
-            font-weight: bold;
-        }
-    </style>
 </head>
 <body>
+<style>
+    .summary{
+        font-size: 20px;
+    }
+
+    .table-responsive {
+        border:1px solid #aaa;
+    }
+    table {
+        width: 100%;
+    }
+    thead, tbody tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+    tbody {
+        display: block;
+        overflow-y: auto;
+        table-layout: fixed;
+        max-height: 60vh;
+    }
+
+    tbody::-webkit-scrollbar {
+        display: none;
+    }
+
+    table thead {
+        border-top: none;
+        border-bottom: none;
+        background-color: #FFF;
+    }
+    tbody{
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+
+    .color-1>td{background-color: #daf8e3;}
+    .color-2>td{background-color: #97ebdb;}
+    .color-3>td{background-color: #00c2c7;}
+    .color-4>td{background-color: #0086ad;}
+    .color-4>td{color:#eee;}
+    .color-5>td{background-color: #005582;}
+    .color-5>td{color:#eee;}
+
+    tr>td{
+        cursor: default;
+    }
+
+    tr:hover>td{
+        font-weight: bold;
+    }
+</style>
 
 <div class="flex-center position-ref full-height">
     @if (Route::has('login'))
@@ -162,8 +168,12 @@
             </tbody>
         </table>
         </div>
+        <div class="summary">
+            Takes {{$summary['hours']}} <b>Hour{{$summary['hours']>1?'s':''}}</b> ( About Takes {{$summary['week']}} <b>Week{{$summary['week']>1?'s':''}}</b> )
+        </div>
     </div>
 </div>
+
 
 <script src="{{ asset('js/app.js') }}"></script>
 {{--

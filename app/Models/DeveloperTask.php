@@ -28,4 +28,16 @@ class DeveloperTask extends Model
         return $this->belongsTo(Task::class);
     }
 
+    public static function getSummary(){
+        $last_week = Self::max('week_number');
+        $time_sumation = Self::groupBy('developer_id')
+            ->selectRaw('sum(`duration`) as duration')
+            ->get()
+            ->max('duration');
+
+        return [
+            'week' => $last_week,
+            'hours' => $time_sumation,
+        ];
+    }
 }
