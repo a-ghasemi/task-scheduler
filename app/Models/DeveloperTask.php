@@ -9,12 +9,15 @@ class DeveloperTask extends Model
 {
     use HasFactory;
 
+    public $timestamps = null;
+
     protected $fillable = [
         'developer_id',
         'task_id',
         'week_number',
         'start',
         'duration',
+        'level',
     ];
 
 }

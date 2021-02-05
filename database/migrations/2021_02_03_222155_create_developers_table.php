@@ -20,6 +20,7 @@ class CreateDevelopersTable extends Migration
             $table->string('title');
             $table->unsignedTinyInteger('level');
             $table->unsignedTinyInteger('work');
+            $table->unsignedSmallInteger('per_week');
             $table->timestamps();
         });
     }

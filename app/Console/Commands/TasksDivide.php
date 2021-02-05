@@ -166,13 +166,34 @@ class TasksDivide extends Command
     }
 
     protected function assignToDevelopers(array $times):void{
+        $mat = [];
         foreach($times as $index => $tasks){
             $developer = Developer::find($index);
+            $mat[$index] = [];
             foreach($tasks as $id => $details){
                 foreach($details as $level => $duration){
-                    $developer->assignTask($id, $level, $duration);
+                    $last_pos = $developer->getLastPosition();
+
+                    list($week,$start) = array_values($last_pos);
+
+                    while($duration > 0){
+                        $part = ($start + $duration < $developer->per_week)?
+                            $duration:
+                            $developer->per_week - $start;
+
+                        $mat[$index][] = implode(',',[$id."|". $level, $week, $start.'|'. $part]);
+                        $developer->assignTask($id, $level, $week, $start, $part);
+
+                        $start = 0;
+                        $duration -= $part;
+                        $week++;
+                    }
+
+
+
                 }
             }
         }
+        dd($mat);
     }
 }

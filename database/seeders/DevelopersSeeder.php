@@ -14,12 +14,12 @@ class DevelopersSeeder extends Seeder
      */
     public function run()
     {
-        $developers = [//level,work
-            'Dev1' => [1,1],
-            'Dev2' => [2,1],
-            'Dev3' => [3,1],
-            'Dev4' => [4,1],
-            'Dev5' => [5,1],
+        $developers = [//level,work,work time per week
+            'Dev1' => [1,1,45],
+            'Dev2' => [2,1,45],
+            'Dev3' => [3,1,45],
+            'Dev4' => [4,1,45],
+            'Dev5' => [5,1,45],
         ];
 
         foreach($developers as $title => $properties){
@@ -27,6 +27,7 @@ class DevelopersSeeder extends Seeder
                 'title' => $title,
                 'level' => $properties[0],
                 'work' => $properties[1],
+                'per_week' => $properties[2],
             ]);
         }
     }

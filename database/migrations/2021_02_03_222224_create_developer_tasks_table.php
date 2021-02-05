@@ -20,6 +20,7 @@ class CreateDeveloperTasksTable extends Migration
             $table->unsignedSmallInteger('week_number');
             $table->unsignedSmallInteger('start');
             $table->unsignedSmallInteger('duration');
+            $table->unsignedTinyInteger('level');
         });
     }
 
